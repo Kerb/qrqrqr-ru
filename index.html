@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Генератор — qrqrqr.ru</title>
+
+<!-- SEO -->
+<meta name="description" content="Бесплатный онлайн-генератор QR-кодов. Создавайте QR-коды для URL, текста и контактов (vCard). Скачивание в PNG и SVG. Всё работает в браузере.">
+<meta name="keywords" content="qr код, генератор qr, qr code, создать qr код, qr для сайта, vcard qr">
+<meta name="author" content="qrqrqr.ru">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://qrqrqr.ru/">
+
+<!-- Open Graph (соцсети, мессенджеры) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="QR Генератор — qrqrqr.ru">
+<meta property="og:description" content="Бесплатный генератор QR-кодов для URL, текста и контактов. Скачивание PNG и SVG.">
+<meta property="og:url" content="https://qrqrqr.ru/">
+<meta property="og:locale" content="ru_RU">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="QR Генератор — qrqrqr.ru">
+<meta name="twitter:description" content="Бесплатный генератор QR-кодов для URL, текста и контактов.">
+
+<!-- PWA / мобильный -->
+<meta name="theme-color" content="#5B63D3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="QR Генератор">
+
+<meta name="yandex-verification" content="2492bac4cb041310" />
+
+<!-- Favicon (inline SVG → data URI, без отдельных файлов) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%235B63D3'/><rect x='6' y='6' width='8' height='8' rx='1' fill='white'/><rect x='7' y='7' width='6' height='6' rx='0.5' fill='%235B63D3'/><rect x='9' y='9' width='2' height='2' fill='white'/><rect x='18' y='6' width='8' height='8' rx='1' fill='white'/><rect x='19' y='7' width='6' height='6' rx='0.5' fill='%235B63D3'/><rect x='21' y='9' width='2' height='2' fill='white'/><rect x='6' y='18' width='8' height='8' rx='1' fill='white'/><rect x='7' y='19' width='6' height='6' rx='0.5' fill='%235B63D3'/><rect x='9' y='21' width='2' height='2' fill='white'/><rect x='18' y='18' width='2' height='2' fill='white'/><rect x='22' y='18' width='2' height='2' fill='white'/><rect x='18' y='22' width='2' height='2' fill='white'/><rect x='20' y='20' width='2' height='2' fill='white'/><rect x='24' y='20' width='2' height='2' fill='white'/><rect x='22' y='24' width='2' height='2' fill='white'/><rect x='24' y='24' width='2' height='2' fill='white'/></svg>">
+
+<title>QR Генератор — qrqrqr.ru</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F0F2FF;
+    --surface: #FFFFFF;
+    --ink: #1C1E2E;
+    --muted: #7B80A8;
+    --accent: #5B63D3;
+    --highlight: #E6E8FA;
+    --border: #D4D7F0;
+    --active: #5B63D3;
+    --active-fg: #FFFFFF;
+    --radius: 12px;
+    --shadow: 0 2px 20px rgba(91,99,211,0.10);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  header p {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 520px;
+    padding: 28px;
+  }
+
+  /* Tab switcher */
+  .tabs {
+    display: flex;
+    background: var(--highlight);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 24px;
+    gap: 2px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    background: var(--active);
+    color: var(--active-fg);
+  }
+
+  /* Forms */
+  .form-section { display: none; }
+  .form-section.visible { display: block; }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--bg);
+    transition: border-color 0.15s;
+    outline: none;
+    resize: none;
+  }
+
+  input:focus, textarea:focus {
+    border-color: #5B63D3;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(91,99,211,0.12);
+  }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-generate {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    background: linear-gradient(135deg, #5B63D3 0%, #7C62D8 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(91,99,211,0.35);
+  }
+
+  .btn-generate:hover { opacity: 0.9; box-shadow: 0 6px 18px rgba(91,99,211,0.45); }
+  .btn-generate:active { transform: scale(0.99); }
+
+  /* QR output */
+  .output {
+    margin-top: 24px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .output.visible { display: flex; }
+
+  .qr-wrap {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+
+  #qr-container canvas,
+  #qr-container img {
+    display: block;
+    border-radius: 4px;
+  }
+
+  .output-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .btn-dl {
+    flex: 1;
+    padding: 10px;
+    background: var(--highlight);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: center;
+  }
+
+  .btn-dl:hover { background: var(--border); }
+
+  .qr-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* size control */
+  .size-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .size-row label {
+    margin: 0;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    padding: 0;
+    border: none;
+    background: transparent;
+    accent-color: #5B63D3;
+    cursor: pointer;
+  }
+
+  .size-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    min-width: 48px;
+    text-align: right;
+  }
+
+  /* Color row */
+  .color-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .color-field {
+    flex: 1;
+  }
+
+  input[type="color"] {
+    padding: 2px 4px;
+    height: 38px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0 0;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 32px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  @media (max-width: 400px) {
+    .row { grid-template-columns: 1fr; }
+    .card { padding: 20px 16px; }
+    .tab { font-size: 0.75rem; padding: 8px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>QR Generator</h1>
+  <p>URL · Текст · Контакт</p>
+</header>
+
+<div class="card">
+  <div class="tabs">
+    <button class="tab active" data-tab="url">URL</button>
+    <button class="tab" data-tab="text">Текст</button>
+    <button class="tab" data-tab="contact">Контакт</button>
+  </div>
+
+  <!-- URL -->
+  <div class="form-section visible" id="tab-url">
+    <div class="field">
+      <label>URL</label>
+      <input type="url" id="input-url" placeholder="https://example.com" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
+  <!-- Text -->
+  <div class="form-section" id="tab-text">
+    <div class="field">
+      <label>Текст</label>
+      <textarea id="input-text" rows="4" placeholder="Введите любой текст…"></textarea>
+    </div>
+  </div>
+
+  <!-- Contact (vCard) -->
+  <div class="form-section" id="tab-contact">
+    <div class="row">
+      <div class="field">
+        <label>Имя</label>
+        <input type="text" id="c-first" placeholder="Иван">
+      </div>
+      <div class="field">
+        <label>Фамилия</label>
+        <input type="text" id="c-last" placeholder="Петров">
+      </div>
+    </div>
+    <div class="field">
+      <label>Телефон</label>
+      <input type="tel" id="c-phone" placeholder="+7 900 000 00 00">
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="c-email" placeholder="ivan@example.com">
+    </div>
+    <div class="field">
+      <label>Компания</label>
+      <input type="text" id="c-org" placeholder="ООО Ромашка">
+    </div>
+    <div class="field">
+      <label>Сайт</label>
+      <input type="url" id="c-url" placeholder="https://example.com">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Options -->
+  <div class="size-row" style="margin-top:16px">
+    <label>Размер</label>
+    <input type="range" id="qr-size" min="128" max="512" step="16" value="256">
+    <span class="size-val" id="size-display">256 px</span>
+  </div>
+
+  <div class="color-row" style="margin-top:12px">
+    <div class="color-field">
+      <label>Тёмный цвет</label>
+      <input type="color" id="qr-dark" value="#1A1A1A">
+    </div>
+    <div class="color-field">
+      <label>Светлый цвет</label>
+      <input type="color" id="qr-light" value="#FFFFFF">
+    </div>
+  </div>
+
+  <button class="btn-generate" id="btn-gen">Создать QR-код</button>
+
+  <div class="output" id="output">
+    <div class="qr-wrap">
+      <div id="qr-container"></div>
+    </div>
+    <div class="qr-label" id="qr-label"></div>
+    <div class="output-actions">
+      <button class="btn-dl" id="btn-png">↓ PNG</button>
+      <button class="btn-dl" id="btn-svg">↓ SVG</button>
+    </div>
+  </div>
+</div>
+
+<footer>qr-gen · всё на стороне клиента</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.form-section');
+  let currentTab = 'url';
+
+  tabs.forEach(t => {
+    t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      sections.forEach(x => x.classList.remove('visible'));
+      t.classList.add('active');
+      currentTab = t.dataset.tab;
+      document.getElementById('tab-' + currentTab).classList.add('visible');
+      hideOutput();
+    });
+  });
+
+  const sizeSlider = document.getElementById('qr-size');
+  const sizeDisplay = document.getElementById('size-display');
+  sizeSlider.addEventListener('input', () => {
+    sizeDisplay.textContent = sizeSlider.value + ' px';
+  });
+
+  function hideOutput() {
+    document.getElementById('output').classList.remove('visible');
+  }
+
+  function getData() {
+    if (currentTab === 'url') {
+      const v = document.getElementById('input-url').value.trim();
+      if (!v) return { err: 'Введите URL' };
+      return { data: v, label: v };
+    }
+    if (currentTab === 'text') {
+      const v = document.getElementById('input-text').value.trim();
+      if (!v) return { err: 'Введите текст' };
+      return { data: v, label: v.slice(0, 60) + (v.length > 60 ? '…' : '') };
+    }
+    // vCard
+    const first = document.getElementById('c-first').value.trim();
+    const last  = document.getElementById('c-last').value.trim();
+    const phone = document.getElementById('c-phone').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+    const org   = document.getElementById('c-org').value.trim();
+    const url   = document.getElementById('c-url').value.trim();
+    if (!first && !last && !phone && !email) return { err: 'Заполните хотя бы одно поле' };
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `N:${last};${first};;;`,
+      `FN:${[first, last].filter(Boolean).join(' ')}`,
+      phone ? `TEL;TYPE=CELL:${phone}` : '',
+      email ? `EMAIL:${email}` : '',
+      org   ? `ORG:${org}` : '',
+      url   ? `URL:${url}` : '',
+      'END:VCARD'
+    ].filter(Boolean).join('\n');
+    const label = [first, last].filter(Boolean).join(' ') || phone || email;
+    return { data: vcard, label };
+  }
+
+  let lastQRData = null;
+
+  document.getElementById('btn-gen').addEventListener('click', () => {
+    const { data, label, err } = getData();
+    if (err) { alert(err); return; }
+
+    const size  = parseInt(sizeSlider.value);
+    const dark  = document.getElementById('qr-dark').value;
+    const light = document.getElementById('qr-light').value;
+
+    const container = document.getElementById('qr-container');
+    container.innerHTML = '';
+
+    new QRCode(container, {
+      text: data,
+      width: size,
+      height: size,
+      colorDark: dark,
+      colorLight: light,
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    lastQRData = { data, size, dark, light };
+    document.getElementById('qr-label').textContent = label;
+    document.getElementById('output').classList.add('visible');
+    document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+
+  // Download PNG
+  document.getElementById('btn-png').addEventListener('click', () => {
+    const canvas = document.querySelector('#qr-container canvas');
+    if (!canvas) return;
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'qr-code.png';
+    a.click();
+  });
+
+  // Download SVG (generate via canvas → data URL workaround, pure JS)
+  document.getElementById('btn-svg').addEventListener('click', () => {
+    if (!lastQRData) return;
+    const { data, size, dark, light } = lastQRData;
+
+    // Build SVG using QRCode library in a hidden div, then extract canvas → SVG path
+    // Simple approach: embed the canvas image into an SVG
+    const canvas = document.querySelector('#qr-container canvas');
+    if (!canvas) return;
+    const dataURL = canvas.toDataURL('image/png');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${size}" height="${size}"><image href="${dataURL}" width="${size}" height="${size}"/></svg>`;
+    const blob = new Blob([svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'qr-code.svg';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=107269640', 'ym');
+
+    ym(107269640, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/107269640" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>
